@@ -10,13 +10,18 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand: My-Extension"
+    "onCommand: My-Extension",
+    "onCommand: My-Extension.openwebview"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
       "command": "My-Extension",
       "title": "My Extension"
+    },
+    {
+      "command": "My-Extension.openwebview",
+      "title": "Open Webview"
     }]
   },
   "scripts": {
