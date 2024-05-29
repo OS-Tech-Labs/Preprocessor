@@ -35,7 +35,7 @@ function activate(context) {
 			}
 		);
 
-		panel.webview.html = getWebviewContent();
+		panel.webview.html = getWebviewContent2();
 
 		// Handle messages from the webview
 		panel.webview.onDidReceiveMessage(
@@ -50,15 +50,61 @@ function activate(context) {
 			context.subscriptions
 		);
 	});
+    let startDisposable = vscode.commands.registerCommand('dataCleaningAssistant.start', function () {
+        const panel = vscode.window.createWebviewPanel(
+            'dataCleaningAssistant',
+            'Data Cleaning Assistant',
+            vscode.ViewColumn.One,
+            { enableScripts: true }
+        );
+
+        panel.webview.html = getWebviewContent();
+
+        panel.webview.onDidReceiveMessage(
+            message => {
+                switch (message.command) {
+                    case 'loadData':
+                        const filePath = message.text;
+                        const data = fs.readFileSync(filePath, 'utf8');
+                        panel.webview.postMessage({ command: 'dataLoaded', data: data });
+                        break;
+                    case 'showSummary':
+                        runPythonScript('summary.py', message.data, (result) => {
+                            panel.webview.postMessage({ command: 'summaryStats', data: result });
+                        });
+                        break;
+                    case 'transformData':
+                        runPythonScript('transform.py', message.data, (result) => {
+                            panel.webview.postMessage({ command: 'dataTransformed', data: result });
+                        });
+                        break;
+                    case 'exploreData':
+                        runPythonScript('explore.py', message.data, (result) => {
+                            panel.webview.postMessage({ command: 'dataExplored', data: result });
+                        });
+                        break;
+                    case 'splitData':
+                        runPythonScript('split.py', message.data, (result) => {
+                            panel.webview.postMessage({ command: 'dataSplit', data: result });
+                        });
+                        break;
+                }
+            },
+            undefined,
+            context.subscriptions
+        );
+    });
+
 
 	context.subscriptions.push(helloworldDisposable);
 	context.subscriptions.push(webviewDisposable);
+    context.subscriptions.push(startDisposable);
 }
 
 // This method is called when your extension is deactivated
 function deactivate() {}
 
-function getWebviewContent() {
+function getWebviewContent2() {
 	return `<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -80,6 +126,79 @@ function getWebviewContent() {
             </script>
         </body>
 	</html>`;
+}
+function getWebviewContent() {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Data Cleaning Assistant</title>
+    </head>
+    <body>
+        <h1>Data Cleaning Assistant</h1>
+        <input type="file" id="fileInput" accept=".csv" />
+        <button onclick="loadData()">Load Data</button>
+        <button onclick="showSummary()">Show Summary Statistics</button>
+        <div id="dataSummary"></div>
+        <script>
+            const vscode = acquireVsCodeApi();
+
+            function loadData() {
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    const csvData = event.target.result;
+                    vscode.postMessage({ command: 'loadData', text: csvData });
+                };
+
+                if (file) {
+                    reader.readAsText(file);
+                } else {
+                    alert('Please select a CSV file first.');
+                }
+            }
+
+            function showSummary() {
+                vscode.postMessage({ command: 'showSummary' });
+            }
+
+            window.addEventListener('message', event => {
+                const message = event.data;
+                switch (message.command) {
+                    case 'dataLoaded':
+                        document.getElementById('dataSummary').innerText = 'Data Loaded. Click "Show Summary Statistics" to view.';
+                        break;
+                    case 'summaryStats':
+                        const summaryData = JSON.parse(message.data);
+                        let summaryHtml = '<h2>Summary Statistics</h2>';
+                        for (const key in summaryData) {
+                            summaryHtml += '<p>' + key + ': ' + summaryData[key] + '</p>';
+
+}
+                        document.getElementById('dataSummary').innerHTML = summaryHtml;
+                        break;
+                }
+            });
+        </script>
+    </body>
+    </html>
+    `;
+}
+function runPythonScript(scriptName, data, callback) {
+    // let options = {
+    //     mode: 'text',
+    //     pythonOptions: ['-u'],
+    //     scriptPath: path.join(__dirname, 'python_scripts'),
+    //     args: [data]
+    // };
+
+    // PythonShell.run(scriptName, options, function (err, results) {
+    //     if (err) throw err;
+    //     callback(results[0]);
+    // });
 }
 module.exports = {
 	activate,

@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand: My-Extension",
-    "onCommand: My-Extension.openwebview"
+    "onCommand: My-Extension.openwebview",
+    "onCommand: dataCleaningAssistant.start"
   ],
   "main": "./extension.js",
   "contributes": {
@@ -22,6 +23,10 @@
     {
       "command": "My-Extension.openwebview",
       "title": "Open Webview"
+    },
+    {
+      "command": "dataCleaningAssistant.start",
+      "title": "Start Data Cleaning Assistant"
     }]
   },
   "scripts": {
