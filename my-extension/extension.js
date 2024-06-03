@@ -1,7 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-
+const path = require('path');
+const fs = require('fs');
+const { PythonShell } = require('python-shell');
+const which = require('which');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -60,35 +63,24 @@ function activate(context) {
 
         panel.webview.html = getWebviewContent();
 
+        let loadedFilePath;
+
         panel.webview.onDidReceiveMessage(
             message => {
+                console.log('Message received:', message);  // Log the received message for debugging purposes
                 switch (message.command) {
+                    
                     case 'loadData':
-                        const filePath = message.text;
-                        const data = fs.readFileSync(filePath, 'utf8');
-                        panel.webview.postMessage({ command: 'dataLoaded', data: data });
+                        loadedFilePath = message.filePath;
+                        panel.webview.postMessage({ command: 'dataLoaded' });
                         break;
                     case 'showSummary':
-                        runPythonScript('summary.py', message.data, (result) => {
+                        runPythonScript('summary.py', loadedFilePath, (result) => {
                             panel.webview.postMessage({ command: 'summaryStats', data: result });
                         });
                         break;
-                    case 'transformData':
-                        runPythonScript('transform.py', message.data, (result) => {
-                            panel.webview.postMessage({ command: 'dataTransformed', data: result });
-                        });
-                        break;
-                    case 'exploreData':
-                        runPythonScript('explore.py', message.data, (result) => {
-                            panel.webview.postMessage({ command: 'dataExplored', data: result });
-                        });
-                        break;
-                    case 'splitData':
-                        runPythonScript('split.py', message.data, (result) => {
-                            panel.webview.postMessage({ command: 'dataSplit', data: result });
-                        });
-                        break;
                 }
+
             },
             undefined,
             context.subscriptions
@@ -142,42 +134,46 @@ function getWebviewContent() {
         <button onclick="showSummary()">Show Summary Statistics</button>
         <div id="dataSummary"></div>
         <script>
+            console.log("Script loaded");
+
             const vscode = acquireVsCodeApi();
+            let csvData = '';
 
             function loadData() {
                 const fileInput = document.getElementById('fileInput');
+                console.log(fileInput);
                 const file = fileInput.files[0];
-                const reader = new FileReader();
-
-                reader.onload = function(event) {
-                    const csvData = event.target.result;
-                    vscode.postMessage({ command: 'loadData', text: csvData });
-                };
-
                 if (file) {
-                    reader.readAsText(file);
+                    vscode.postMessage({ command: 'loadData', filePath: file.path });
+                    console.log("file loaded");
                 } else {
                     alert('Please select a CSV file first.');
                 }
+
+                
             }
+            
 
             function showSummary() {
-                vscode.postMessage({ command: 'showSummary' });
+                vscode.postMessage({ command: 'showSummary', text: csvData});
+                console.log("showSummary");
             }
 
             window.addEventListener('message', event => {
                 const message = event.data;
                 switch (message.command) {
                     case 'dataLoaded':
+                        
                         document.getElementById('dataSummary').innerText = 'Data Loaded. Click "Show Summary Statistics" to view.';
                         break;
                     case 'summaryStats':
                         const summaryData = JSON.parse(message.data);
+                        console.log("data receivedzz")
                         let summaryHtml = '<h2>Summary Statistics</h2>';
                         for (const key in summaryData) {
                             summaryHtml += '<p>' + key + ': ' + summaryData[key] + '</p>';
 
-}
+                        }
                         document.getElementById('dataSummary').innerHTML = summaryHtml;
                         break;
                 }
@@ -187,18 +183,28 @@ function getWebviewContent() {
     </html>
     `;
 }
-function runPythonScript(scriptName, data, callback) {
-    // let options = {
-    //     mode: 'text',
-    //     pythonOptions: ['-u'],
-    //     scriptPath: path.join(__dirname, 'python_scripts'),
-    //     args: [data]
-    // };
+function runPythonScript(scriptName, filePath, callback) {
+    
+    const pythonexecutable = which.sync('python');
+    console.log(pythonexecutable);
 
-    // PythonShell.run(scriptName, options, function (err, results) {
-    //     if (err) throw err;
-    //     callback(results[0]);
-    // });
+    let options = {
+        mode: 'text',
+        pythonPath: pythonexecutable,
+        pythonOptions: ['-u'],
+        scriptPath: path.join(__dirname, 'python_scripts'),
+        args: [filePath]
+    };
+    console.log('Running Python script:', scriptName);
+    console.log('Data passed to script:', filePath);
+    PythonShell.run(scriptName, options, function (err, results) {
+        if (err) {
+            console.error('Error running Python script:', err);
+            throw err;
+        }
+        console.log('Python script results:', results);
+        callback(results[0]);
+    });
 }
 module.exports = {
 	activate,
