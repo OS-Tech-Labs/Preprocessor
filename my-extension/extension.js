@@ -1,10 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-const vscode = require('vscode');
-const path = require('path');
-const fs = require('fs');
-const { PythonShell } = require('python-shell');
-const which = require('which');
+const vscode = require("vscode")
+const path = require("path")
+const fs = require("fs")
+const { PythonShell } = require("python-shell")
+const which = require("which")
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -12,92 +12,100 @@ const which = require('which');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+  // Use the console to output diagnostic information (console.log) and errors (console.error)
+  // This line of code will only be executed once when your extension is activated
+  console.log('Congratulations, your extension "my-extension" is now active!')
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "my-extension" is now active!');
+  // The command has been defined in the package.json file
+  // Now provide the implementation of the command with  registerCommand
+  // The commandId parameter must match the command field in package.json
+  let helloworldDisposable = vscode.commands.registerCommand(
+    "My-Extension",
+    function () {
+      // The code you place here will be executed every time your command is executed
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let helloworldDisposable = vscode.commands.registerCommand('My-Extension', function () {
-		// The code you place here will be executed every time your command is executed
+      // Display a message box to the user
+      vscode.window.showInformationMessage("Hello World from My Extension!")
+    }
+  )
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from My Extension!');
-	});
+  let webviewDisposable = vscode.commands.registerCommand(
+    "My-Extension.openwebview",
+    function () {
+      // Create and show a new webview
+      const panel = vscode.window.createWebviewPanel(
+        "exampleWebview", // Identifies the type of the webview. Used internally
+        "Example Webview", // Title of the panel displayed to the user
+        vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+        }
+      )
 
-	let webviewDisposable = vscode.commands.registerCommand('My-Extension.openwebview', function () {
-		// Create and show a new webview
-		const panel = vscode.window.createWebviewPanel(
-			'exampleWebview', // Identifies the type of the webview. Used internally
-			'Example Webview', // Title of the panel displayed to the user
-			vscode.ViewColumn.One,
-			{
-				enableScripts: true
-			}
-		);
+      panel.webview.html = getWebviewContent2()
 
-		panel.webview.html = getWebviewContent2();
+      // Handle messages from the webview
+      panel.webview.onDidReceiveMessage(
+        (message) => {
+          switch (message.command) {
+            case "alert":
+              vscode.window.showErrorMessage(message.text)
+              return
+          }
+        },
+        undefined,
+        context.subscriptions
+      )
+    }
+  )
+  let startDisposable = vscode.commands.registerCommand(
+    "dataCleaningAssistant.start",
+    function () {
+      const panel = vscode.window.createWebviewPanel(
+        "dataCleaningAssistant",
+        "Data Cleaning Assistant",
+        vscode.ViewColumn.One,
+        { enableScripts: true }
+      )
 
-		// Handle messages from the webview
-		panel.webview.onDidReceiveMessage(
-			message => {
-				switch (message.command) {
-					case 'alert':
-						vscode.window.showErrorMessage(message.text);
-						return;
-				}
-			},
-			undefined,
-			context.subscriptions
-		);
-	});
-    let startDisposable = vscode.commands.registerCommand('dataCleaningAssistant.start', function () {
-        const panel = vscode.window.createWebviewPanel(
-            'dataCleaningAssistant',
-            'Data Cleaning Assistant',
-            vscode.ViewColumn.One,
-            { enableScripts: true }
-        );
+      panel.webview.html = getWebviewContent()
 
-        panel.webview.html = getWebviewContent();
+      let loadedFilePath
 
-        let loadedFilePath;
+      panel.webview.onDidReceiveMessage(
+        (message) => {
+          console.log("Message received:", message) // Log the received message for debugging purposes
+          switch (message.command) {
+            case "loadData":
+              loadedFilePath = message.filePath
+              panel.webview.postMessage({ command: "dataLoaded" })
+              break
+            case "showSummary":
+              runPythonScript("summary.py", loadedFilePath, (result) => {
+                panel.webview.postMessage({
+                  command: "summaryStats",
+                  data: result,
+                })
+              })
+              break
+          }
+        },
+        undefined,
+        context.subscriptions
+      )
+    }
+  )
 
-        panel.webview.onDidReceiveMessage(
-            message => {
-                console.log('Message received:', message);  // Log the received message for debugging purposes
-                switch (message.command) {
-                    
-                    case 'loadData':
-                        loadedFilePath = message.filePath;
-                        panel.webview.postMessage({ command: 'dataLoaded' });
-                        break;
-                    case 'showSummary':
-                        runPythonScript('summary.py', loadedFilePath, (result) => {
-                            panel.webview.postMessage({ command: 'summaryStats', data: result });
-                        });
-                        break;
-                }
-
-            },
-            undefined,
-            context.subscriptions
-        );
-    });
-
-
-	context.subscriptions.push(helloworldDisposable);
-	context.subscriptions.push(webviewDisposable);
-    context.subscriptions.push(startDisposable);
+  context.subscriptions.push(helloworldDisposable)
+  context.subscriptions.push(webviewDisposable)
+  context.subscriptions.push(startDisposable)
 }
 
 // This method is called when your extension is deactivated
 function deactivate() {}
 
 function getWebviewContent2() {
-	return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 	<html lang="en">
 	<head>
 		<meta charset="UTF-8">
@@ -117,10 +125,10 @@ function getWebviewContent2() {
                 });
             </script>
         </body>
-	</html>`;
+	</html>`
 }
 function getWebviewContent() {
-    return `
+  return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -181,32 +189,29 @@ function getWebviewContent() {
         </script>
     </body>
     </html>
-    `;
+    `
 }
 function runPythonScript(scriptName, filePath, callback) {
-    
-    const pythonexecutable = which.sync('python');
-    console.log(pythonexecutable);
+  const { spawn } = require("child_process")
 
-    let options = {
-        mode: 'text',
-        pythonPath: pythonexecutable,
-        pythonOptions: ['-u'],
-        scriptPath: path.join(__dirname, 'python_scripts'),
-        args: [filePath]
-    };
-    console.log('Running Python script:', scriptName);
-    console.log('Data passed to script:', filePath);
-    PythonShell.run(scriptName, options, function (err, results) {
-        if (err) {
-            console.error('Error running Python script:', err);
-            throw err;
-        }
-        console.log('Python script results:', results);
-        callback(results[0]);
-    });
+  let scriptPath = path.join(__dirname, "python_scripts", scriptName)
+
+  const pythonProcess = spawn("python", [scriptPath, filePath])
+
+  pythonProcess.stdout.on("data", (data) => {
+    console.log(`Python script stdout: ${data}`)
+    callback(data.toString())
+  })
+
+  pythonProcess.stderr.on("data", (data) => {
+    console.error(`Python script stderr: ${data}`)
+  })
+
+  pythonProcess.on("close", (code) => {
+    console.log(`Python script exited with code ${code}`)
+  })
 }
 module.exports = {
-	activate,
-	deactivate
+  activate,
+  deactivate,
 }
