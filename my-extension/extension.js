@@ -176,10 +176,11 @@ function getWebviewContent() {
                         break;
                     case 'summaryStats':
                         const summaryData = JSON.parse(message.data);
-                        console.log("data receivedzz")
+                        console.log("data received")
                         let summaryHtml = '<h2>Summary Statistics</h2>';
                         for (const key in summaryData) {
-                            summaryHtml += '<p>' + key + ': ' + summaryData[key] + '</p>';
+                            summaryHtml += '<h3>' + key + '</h3>';
+                            summaryHtml += '<pre>' + JSON.stringify(summaryData[key], null, 2) + '</pre>';
 
                         }
                         document.getElementById('dataSummary').innerHTML = summaryHtml;
@@ -201,6 +202,7 @@ function runPythonScript(scriptName, filePath, callback) {
   pythonProcess.stdout.on("data", (data) => {
     console.log(`Python script stdout: ${data}`)
     callback(data.toString())
+    //callback("{'mean': 5, 'std': 2}")
   })
 
   pythonProcess.stderr.on("data", (data) => {
