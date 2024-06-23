@@ -134,6 +134,53 @@ function getWebviewContent() {
     <head>
         <meta charset="UTF-8">
         <title>Data Cleaning Assistant</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            h1 {
+                color: #333;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: left;
+                margin: 5px;
+            }
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+            
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+            #fileInput, button {
+                margin: 10px 0;
+            }
+            button {
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #007acc;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #005fa3;
+            }
+            #dataSummary {
+                margin-top: 20px;
+            }
+        </style>
     </head>
     <body>
         <h1>Data Cleaning Assistant</h1>
@@ -178,11 +225,23 @@ function getWebviewContent() {
                         const summaryData = JSON.parse(message.data);
                         console.log("data received")
                         let summaryHtml = '<h2>Summary Statistics</h2>';
+                        summaryHtml += '<table><thead><tr>';
+                        summaryHtml += '<th>Attribute</th><th>Count</th><th>Mean</th><th>Std</th><th>Min</th><th>25%</th><th>50%</th><th>75%</th><th>Max</th>';
+                        summaryHtml += '</tr></thead><tbody>';
                         for (const key in summaryData) {
-                            summaryHtml += '<h3>' + key + '</h3>';
-                            summaryHtml += '<pre>' + JSON.stringify(summaryData[key], null, 2) + '</pre>';
-
+                            summaryHtml += '<tr>';
+                            summaryHtml += '<td>' + key + '</td>';
+                            summaryHtml += '<td>' + summaryData[key].count + '</td>';
+                            summaryHtml += '<td>' + summaryData[key].mean + '</td>';
+                            summaryHtml += '<td>' + summaryData[key].std + '</td>';
+                            summaryHtml += '<td>' + summaryData[key].min + '</td>';
+                            summaryHtml += '<td>' + summaryData[key]['25%'] + '</td>';
+                            summaryHtml += '<td>' + summaryData[key]['50%'] + '</td>';
+                            summaryHtml += '<td>' + summaryData[key]['75%'] + '</td>';
+                            summaryHtml += '<td>' + summaryData[key].max + '</td>';
+                            summaryHtml += '</tr>';
                         }
+                        summaryHtml += '</tbody></table>';
                         document.getElementById('dataSummary').innerHTML = summaryHtml;
                         break;
                 }
