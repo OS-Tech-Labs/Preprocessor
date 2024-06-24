@@ -87,6 +87,16 @@ function activate(context) {
                   data: result,
                 })
               })
+            break
+            
+            case "generateChart":
+              const options = [message.chartType, message.xColumn, message.yColumn];
+              runPythonScript("generate_chart.py", loadedFilePath, (result) => {
+                panel.webview.postMessage({
+                  command: "chartData",
+                  data: result,
+                });
+              }, options);
               break
           }
         },
@@ -187,14 +197,35 @@ function getWebviewContent() {
         <input type="file" id="fileInput" accept=".csv" />
         <button onclick="loadData()">Load Data</button>
         <button onclick="showSummary()">Show Summary Statistics</button>
+        <div id="controls" style="display: none;">
+            <h2>Generate Chart</h2>
+            <label for="chartType">Select Chart Type:</label>
+            <select id="chartType">
+                <option value="bar">Bar Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="scatter">Scatter Plot</option>
+            </select>
+            <br>
+            <label for="xColumn">Select X-axis Column:</label>
+            <select id="xColumn"></select>
+            <br>
+            <label for="yColumn">Select Y-axis Column:</label>
+            <select id="yColumn"></select>
+            <br>
+            <button onclick="generateChart()">Generate Chart</button>
+        </div>
         <div id="dataSummary"></div>
+        <div id="chartContainer">
+            <img id="chartImage" width="400" height="400" />
+        </div>
         <script>
             console.log("Script loaded");
 
             const vscode = acquireVsCodeApi();
             let csvData = '';
-
+            let columns = [];
             function loadData() {
+                console.log("loadData");
                 const fileInput = document.getElementById('fileInput');
                 console.log(fileInput);
                 const file = fileInput.files[0];
@@ -213,6 +244,19 @@ function getWebviewContent() {
                 vscode.postMessage({ command: 'showSummary', text: csvData});
                 console.log("showSummary");
             }
+            
+            function generateChart() {
+                const chartType = document.getElementById('chartType').value;
+                const xColumn = document.getElementById('xColumn').value;
+                const yColumn = document.getElementById('yColumn').value;
+                vscode.postMessage({
+                    command: 'generateChart',
+                    chartType: chartType,
+                    xColumn: xColumn,
+                    yColumn: yColumn
+                });
+                console.log("generateChart");
+            }
 
             window.addEventListener('message', event => {
                 const message = event.data;
@@ -220,6 +264,7 @@ function getWebviewContent() {
                     case 'dataLoaded':
                         
                         document.getElementById('dataSummary').innerText = 'Data Loaded. Click "Show Summary Statistics" to view.';
+                        
                         break;
                     case 'summaryStats':
                         const summaryData = JSON.parse(message.data);
@@ -229,6 +274,7 @@ function getWebviewContent() {
                         summaryHtml += '<th>Attribute</th><th>Count</th><th>Mean</th><th>Std</th><th>Min</th><th>25%</th><th>50%</th><th>75%</th><th>Max</th>';
                         summaryHtml += '</tr></thead><tbody>';
                         for (const key in summaryData) {
+                            columns.push(key);
                             summaryHtml += '<tr>';
                             summaryHtml += '<td>' + key + '</td>';
                             summaryHtml += '<td>' + summaryData[key].count + '</td>';
@@ -242,25 +288,45 @@ function getWebviewContent() {
                             summaryHtml += '</tr>';
                         }
                         summaryHtml += '</tbody></table>';
+
+                        const xColumnSelect = document.getElementById('xColumn');
+                                const yColumnSelect = document.getElementById('yColumn');
+                                xColumnSelect.innerHTML = "";
+                                yColumnSelect.innerHTML = "";
+                                columns.forEach(column => {
+                                    const option = document.createElement('option');
+                                    option.value = column;
+                                    option.innerText = column;
+                                    xColumnSelect.appendChild(option.cloneNode(true));
+                                    yColumnSelect.appendChild(option);
+                                }
+                                );
+                        document.getElementById('controls').style.display = 'block';
                         document.getElementById('dataSummary').innerHTML = summaryHtml;
+                        break;
+                    
+                    case 'chartData':
+                        const imagePath = message.data;
+                        document.getElementById('chartImage').src = vscode.Uri.file(imagePath).toString();
                         break;
                 }
             });
         </script>
+
     </body>
     </html>
     `
 }
-function runPythonScript(scriptName, filePath, callback) {
+function runPythonScript(scriptName, filePath, callback, options = []){
   const { spawn } = require("child_process")
 
   let scriptPath = path.join(__dirname, "python_scripts", scriptName)
 
-  const pythonProcess = spawn("python", [scriptPath, filePath])
+  const pythonProcess = spawn("python", [scriptPath, filePath,...options])
 
   pythonProcess.stdout.on("data", (data) => {
     console.log(`Python script stdout: ${data}`)
-    callback(data.toString())
+    callback(data.toString().trim())
     //callback("{'mean': 5, 'std': 2}")
   })
 
