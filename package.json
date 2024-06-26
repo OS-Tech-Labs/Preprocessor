@@ -1,5 +1,54 @@
 {
+  "name": "my-extension",
+  "displayName": "My Extension",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand: My-Extension",
+    "onCommand: My-Extension.openwebview",
+    "onCommand: dataCleaningAssistant.start"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "My-Extension",
+        "title": "My Extension"
+      },
+      {
+        "command": "My-Extension.openwebview",
+        "title": "Open Webview"
+      },
+      {
+        "command": "dataCleaningAssistant.start",
+        "title": "Start Data Cleaning Assistant"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.89.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
   "dependencies": {
-    "child_process": "^1.0.2"
+    "python-shell": "^5.0.0",
+    "which": "^4.0.0"
+    
+
   }
 }
