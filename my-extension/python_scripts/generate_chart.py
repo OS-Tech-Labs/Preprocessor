@@ -27,4 +27,4 @@ if __name__ == "__main__":
     x_column = sys.argv[3]
     y_column = sys.argv[4]
     image_path = generate_chart(file_path, chart_type, x_column, y_column)
-    print("C:\\Users\\user\\Downloads\\"+image_path)
+    print(image_path)

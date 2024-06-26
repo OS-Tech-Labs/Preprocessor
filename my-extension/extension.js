@@ -216,7 +216,6 @@ function getWebviewContent() {
         </div>
         <div id="dataSummary"></div>
         <div id="chartContainer">
-            <img id="chartImage" width="400" height="400" />
         </div>
         <script>
             console.log("Script loaded");
@@ -307,7 +306,10 @@ function getWebviewContent() {
                     
                     case 'chartData':
                         const imagePath = message.data;
-                        document.getElementById('chartImage').src = vscode.Uri.file(imagePath).toString();
+                        
+                        let chartHtml = '<img src=imagePath  alt="chart" />';
+                        document.getElementById('chartContainer').innerHTML = chartHtml;
+
                         break;
                 }
             });
