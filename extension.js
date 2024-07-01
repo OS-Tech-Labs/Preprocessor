@@ -5,12 +5,17 @@ const path = require("path")
 const fs = require("fs")
 const { PythonShell } = require("python-shell")
 const which = require("which")
+const db = require('./db');
+const os = require('os');
+
+const tempDir = path.join(os.tmpdir(), 'vscode-extension-temp');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
 /**
  * @param {vscode.ExtensionContext} context
  */
+
 function activate(context) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
@@ -67,15 +72,30 @@ function activate(context) {
               })
             break
             
-            case "generateChart":
+            
+            case 'generateChart':
               const options = [message.chartType, message.xColumn, message.yColumn];
-              runPythonScript("generate_chart.py", loadedFilePath, (result) => {
-                panel.webview.postMessage({
-                  command: "chartData",
-                  data: result,
-                });
+              runPythonScript('generate_chart.py', loadedFilePath, (result) => {
+                  const imagePath = result;
+                  db.insertImage(imagePath, (err, imageId) => {
+                      if (err) {
+                          vscode.window.showErrorMessage('Error storing image in database');
+                          return;
+                      }
+                      db.getImageById(imageId, (err, image) => {
+                          if (err) {
+                              vscode.window.showErrorMessage('Error retrieving image from database');
+                              return;
+                          }
+                          const base64Image = Buffer.from(image).toString('base64');
+                          panel.webview.postMessage({
+                              command: 'chartData',
+                              data: base64Image,
+                          });
+                      });
+                  });
               }, options);
-              break
+            break;
             
           }
         },
