@@ -24,15 +24,7 @@ function activate(context) {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with  registerCommand
   // The commandId parameter must match the command field in package.json
-  let helloworldDisposable = vscode.commands.registerCommand(
-    "My-Extension",
-    function () {
-      // The code you place here will be executed every time your command is executed
-
-      // Display a message box to the user
-      vscode.window.showInformationMessage("Hello World from My Extension!")
-    }
-  )
+  
 
 
   let startDisposable = vscode.commands.registerCommand(
@@ -105,13 +97,29 @@ function activate(context) {
     }
   )
 
-  context.subscriptions.push(helloworldDisposable)
   
   context.subscriptions.push(startDisposable)
+  let deactivateCommand = vscode.commands.registerCommand('dataCleaningAssistant.deactivate', function () {
+    deactivate();
+});
+context.subscriptions.push(deactivateCommand);
+  
 }
 
 // This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() {
+  console.log('Deactivated')
+  db.deleteImages((err) => {
+    if (err) {
+        console.error('Error deleting images:', err);
+    }
+    else {
+        console.log('Deleted images');
+    }
+  });
+  
+ 
+}
 
 
 
@@ -138,5 +146,5 @@ function runPythonScript(scriptName, filePath, callback, options = []){
 }
 module.exports = {
   activate,
-  deactivate,
+  deactivate
 }
