@@ -85,12 +85,14 @@ console.log("Script loaded");
                         document.getElementById('dataSummary').innerHTML = summaryHtml;
                         break;
                     
-                    case 'chartData':
-                        const imagePath = message.data;
-                        console.log("imagePath", imagePath);
-                        let chartHtml = '<img src=imagePath  alt="chart" />';
-                        document.getElementById('chartContainer').innerHTML = chartHtml;
-
-                        break;
+                        case 'chartData':
+                            const base64Image = message.data;
+                            console.log("chartData received");
+                            let chartHtml = `<img src="data:image/png;base64,${base64Image}" alt="chart" />`;
+                            document.getElementById('chartContainer').innerHTML = chartHtml;
+                            break;
+                    
+                
+                        
                 }
             });
