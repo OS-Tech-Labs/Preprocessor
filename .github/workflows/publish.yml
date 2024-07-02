@@ -42,4 +42,6 @@ jobs:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
           PUBLISHER_NAME: ${{ secrets.PUBLISHER_NAME }}
         run: |
-          vsce publish -p $VSCE_PAT
+          vsce package && vsce publish
+
+          

@@ -1,7 +1,9 @@
 {
-  "name": "my-extension",
-  "displayName": "My Extension",
+  "name": "data-preprocessor",
+  "displayName": "Data Preprocessor",
+  "publisher": "OSTech-Labs",
   "description": "",
+  "repository": "https://github.com/OS-Tech-Labs/Preprocessor",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.89.0"
