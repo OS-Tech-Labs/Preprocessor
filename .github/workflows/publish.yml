@@ -47,4 +47,4 @@ jobs:
         run: |
           npm install -g @vscode/vsce
           vsce package
-          vsce publish 
+          vsce publish OSTech-Labs
