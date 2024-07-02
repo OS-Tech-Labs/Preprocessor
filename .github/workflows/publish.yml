@@ -21,13 +21,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-      
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'  # Adjust node version as needed
-      
+          node-version: 18.x # Adjust node version as needed
+
       - name: Install dependencies
         run: npm install
 
@@ -38,7 +38,7 @@ jobs:
           else
             npm test
           fi
-      
+
       - name: Publish Extension
         if: success() && matrix.os == 'ubuntu-latest'
         env:
