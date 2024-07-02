@@ -47,4 +47,4 @@ jobs:
         run: |
           npm install -g @vscode/vsce
           npx @vscode/vsce package
-          npx @vscode/vsce publish minor -p $VSCE_PAT
+          npx @vscode/vsce publish minor --pat $VSCE_PAT
