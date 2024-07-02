@@ -39,8 +39,8 @@ jobs:
 
       - name: Publish Extension
         env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-          PUBLISHER_NAME: ${{ secrets.PUBLISHER_NAME }}
+          VSCE_PAT: ${{ env.VSCE_PAT }}
+          PUBLISHER_NAME: ${{ env.PUBLISHER_NAME }}
         run: |
           vsce package && vsce publish
 
