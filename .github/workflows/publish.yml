@@ -46,6 +46,5 @@ jobs:
           PUBLISHER_NAME: ${{ secrets.PUBLISHER_NAME }}
         run: |
           npm install -g @vscode/vsce
-          npx @vscode/vsce login --pat $VSCE_PAT
           npx @vscode/vsce package
-          npx @vscode/vsce publish minor
+          npx @vscode/vsce publish minor -p $VSCE_PAT
