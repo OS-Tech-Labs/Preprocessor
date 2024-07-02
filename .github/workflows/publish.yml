@@ -1,18 +1,16 @@
-# This is a basic workflow to help you get started with Actions
+name: CI/CD
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: ["main", "dev"]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: ["main", "dev"]
+    branches:
+      - main
+      - dev
   release:
-    types:
-      - created
-  # Allows you to run this workflow manually from the Actions tab
+    types: [created]
   workflow_dispatch:
 
 jobs:
@@ -22,21 +20,32 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 18.x
-      - run: npm install
-      - run: xvfb-run -a npm test
-        if: runner.os == 'Linux'
-      - run: npm test
-        if: runner.os != 'Linux'
+          node-version: '14'  # Adjust node version as needed
+      
+      - name: Install dependencies
+        run: npm install
 
-      - name: Publish
+      - name: Run tests
+        run: |
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            xvfb-run -a npm test
+          else
+            npm test
+          fi
+      
+      - name: Publish Extension
         if: success() && matrix.os == 'ubuntu-latest'
-        run: vsce login ${{secrets.PUBLISHER_NAME}} --pat ${{ secrets.VSCE_PAT }} && vsce package && vsce publish minor
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
           PUBLISHER_NAME: ${{ secrets.PUBLISHER_NAME }}
+        run: |
+          npm install -g vsce
+          vsce login $PUBLISHER_NAME --pat $VSCE_PAT
+          vsce package
+          vsce publish minor
