@@ -45,4 +45,4 @@ jobs:
           echo "Publishing extension..."
           echo "VSCE_PAT: ${{ secrets.VSCE_PAT }}"
           vsce package
-          vsce publish -p ${{ secrets.VSCE_PAT }}
+          vsce publish --token ${{ secrets.VSCE_PAT }}
