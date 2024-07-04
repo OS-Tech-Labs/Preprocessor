@@ -40,12 +40,9 @@ jobs:
 
       - name: Publish Extension
         if: success() && matrix.os == 'ubuntu-latest'
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-          PUBLISHER_NAME: ${{ secrets.PUBLISHER_NAME }}
         run: |
           npm install -g @vscode/vsce
           echo "Publishing extension..."
-          echo "VSCE_PAT: $VSCE_PAT"
+          echo "VSCE_PAT: ${{ secrets.VSCE_PAT }}"
           vsce package
-          vsce publish -p $VSCE_PAT -u $PUBLISHER_NAME
+          vsce publish -p ${{ secrets.VSCE_PAT }}
