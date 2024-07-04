@@ -38,11 +38,9 @@ jobs:
             npm test
           fi
 
-      - name: Publish Extension
-        if: success() && matrix.os == 'ubuntu-latest'
-        run: |
-          npm install -g @vscode/vsce
-          echo "Publishing extension..."
-          echo "VSCE_PAT: ${{ secrets.VSCE_PAT }}"
-          vsce package
-          vsce publish --token ${{ secrets.VSCE_PAT }}
+      - name: Vscode release plugin
+        uses: JCofman/vscodeaction@master
+        env:
+          PUBLISHER_TOKEN: ${{ secrets.VSCE_PAT }}
+        with:
+          args: publish -p $PUBLISHER_TOKEN
