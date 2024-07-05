@@ -3,8 +3,8 @@
 const vscode = require("vscode")
 const path = require("path")
 const fs = require("fs")
-const { PythonShell } = require("python-shell")
-const which = require("which")
+// const { PythonShell } = require("python-shell")
+
 const db = require('./db');
 const os = require('os');
 
@@ -98,8 +98,8 @@ function activate(context) {
   )
 
   
-  context.subscriptions.push(startDisposable)
-  let deactivateCommand = vscode.commands.registerCommand('dataCleaningAssistant.deactivate', function () {
+context.subscriptions.push(startDisposable)
+let deactivateCommand = vscode.commands.registerCommand('dataCleaningAssistant.deactivate', function () {
     deactivate();
 });
 context.subscriptions.push(deactivateCommand);

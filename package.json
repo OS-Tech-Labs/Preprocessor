@@ -10,24 +10,20 @@
     "Other"
   ],
   "activationEvents": [
-    
     "onCommand: dataCleaningAssistant.start",
     "onCommand: dataCleaningAssistant.deactivate"
-
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
-      
       {
         "command": "dataCleaningAssistant.start",
-        "title": "Start Data Cleaning Assistant"
+        "title": "Start Data Cleaning Assistant dev"
       },
       {
         "command": "dataCleaningAssistant.deactivate",
         "title": "Deactivate Data Cleaning Assistant"
-    }
-
+      }
     ]
   },
   "scripts": {
@@ -45,8 +41,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "python-shell": "^5.0.0",
-    "sqlite3": "^5.1.7",
-    "which": "^4.0.0"
+    "sqlite3": "^5.1.7"
   }
 }

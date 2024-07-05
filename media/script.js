@@ -4,6 +4,8 @@ console.log("Script loaded");
             const vscode = acquireVsCodeApi();
             let csvData = '';
             let columns = [];
+            
+            document.getElementById('fileInput').addEventListener('change', loadData);
             function loadData() {
                 console.log("loadData");
                 const fileInput = document.getElementById('fileInput');
