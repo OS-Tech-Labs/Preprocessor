@@ -1,0 +1,47 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - dev
+      - main
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x # Adjust node version as needed
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: |
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            xvfb-run -a npm test
+          else
+            npm test
+          fi
+
+      - name: Vscode release plugin
+        uses: JCofman/vscodeaction@master
+        env:
+          PUBLISHER_TOKEN: ${{ secrets.VSCE_PAT }}
+        with:
+          args: publish -p $PUBLISHER_TOKEN
