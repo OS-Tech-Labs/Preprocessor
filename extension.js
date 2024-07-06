@@ -64,6 +64,7 @@ function activate(context) {
                         panel.webview.postMessage({
                             command: 'summaryStats',
                             data: result,
+                            columnName: column
                         });
                     }, [column]);
                     break;
@@ -77,19 +78,28 @@ function activate(context) {
                 //     });
                 //     break;
                 case 'generateChart':
-                    const xColumn = message.xColumn;
-                    runPythonScript('generate_chart.py', loadedFilePath, (imagePath) => {
-                        db.run('INSERT INTO images (path) VALUES (?)', [imagePath], function(err) {
-                            if (err) {
-                                return console.error(err.message);
-                            }
-                            panel.webview.postMessage({
-                                command: 'chartData',
-                                data: imagePath
-                            });
-                        });
-                    }, [xColumn]);
-                    break;
+                  const columnName = message.xColumn
+                  runPythonScript('generate_chart.py', loadedFilePath, (result) => {
+                      const imagePath = result;
+                      db.insertImage(imagePath, (err, imageId) => {
+                          if (err) {
+                              vscode.window.showErrorMessage('Error storing image in database');
+                              return;
+                          }
+                          db.getImageById(imageId, (err, image) => {
+                              if (err) {
+                                  vscode.window.showErrorMessage('Error retrieving image from database');
+                                  return;
+                              }
+                              const base64Image = Buffer.from(image).toString('base64');
+                              panel.webview.postMessage({
+                                  command: 'chartData',
+                                  data: base64Image,
+                              });
+                          });
+                      });
+                  }, [columnName]);
+                break;
           }
         },
         undefined,

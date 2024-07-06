@@ -42,8 +42,9 @@ console.log("Script loaded");
         case 'summaryStats':
             console.log("summaryStats");
             const summaryData = JSON.parse(message.data);
+            const columnName  = message.columnName
             console.log("data received");
-            let summaryHtml = '<h2>Summary Statistics</h2>';
+            let summaryHtml = `<h2>Summary Statistics for ${columnName} </h2>`;
             summaryHtml += '<table><thead><tr>';
             summaryHtml += '<th>Attribute</th><th>Value</th>';
             summaryHtml += '</tr></thead><tbody>';
@@ -55,16 +56,17 @@ console.log("Script loaded");
             }
             summaryHtml += '</tbody></table>';
             document.getElementById('dataSummary').innerHTML = summaryHtml;
-            generateChartForColumn(message.columnName);
+            generateChartForColumn(columnName);
 
             break;
         case 'chartData':
-            const imagePath = message.data;
-            let chartHtml = `<img src="${imagePath}" alt="chart" />`;
+            
+            const base64Image = message.data;
+            console.log("chartData received");
+            let chartHtml = `<img src="data:image/png;base64,${base64Image}" alt="chart" />`;
             document.getElementById('chartContainer').innerHTML = chartHtml;
             break;
-        
-                
+
             }
         });
 function populateColumnButtons(columns) {

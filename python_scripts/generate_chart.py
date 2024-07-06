@@ -5,7 +5,7 @@ import os
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: generate_chart.py <csv_file_path> <column_name>")
+        # print("Usage: generate_chart.py <csv_file_path> <column_name>")
         sys.exit(1)
     
     csv_file_path = sys.argv[1]
