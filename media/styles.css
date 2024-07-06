@@ -3,32 +3,89 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
 }
+#mainContainer {
+    display: flex;
+    flex-direction: row;
+    height: 400px;
+}
+.column {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+}
+#columnList {
+    width: 30%;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+#details {
+    width: 70%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+#fileInputContainer {
+    margin-bottom: 20px;
+}
+#columns {
+    list-style-type: none;
+    padding: 0;
+}
+#columns li {
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+#columns li:hover {
+    background-color: #f0f0f0;
+}
+#dataSummary, #chartContainer {
+    margin-top: 20px;
+}
 h1 {
     color: #333;
 }
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 th, td {
     border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    margin: 5px;
+    padding: 8px;
 }
+
 th {
     background-color: #f2f2f2;
-    font-weight: bold;
 }
 
 tr:hover {
     background-color: #f1f1f1;
 }
+#fileInputButton {
+    background-color: #007acc;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#fileInputButton:hover {
+    background-color: #005f99;
+}
+
+#fileName {
+    margin-left: 10px;
+    font-size: 14px;
+}
 #fileInput, button {
     margin: 10px 0;
 }
-#fileinput, button {
+button {
     padding: 10px 15px;
     font-size: 16px;
     cursor: pointer;
@@ -41,6 +98,25 @@ tr:hover {
 button:hover {
     background-color: #005fa3;
 }
-#dataSummary {
-    margin-top: 20px;
+.column {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+}
+
+.column-buttons button {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 10px;
+    background-color: #5751c9;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.column-buttons button:hover {
+    background-color: #9b60b4;
 }

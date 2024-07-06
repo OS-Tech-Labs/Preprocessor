@@ -51,44 +51,45 @@ function activate(context) {
         (message) => {
           console.log("Message received:", message) // Log the received message for debugging purposes
           switch (message.command) {
-            case "loadData":
-              loadedFilePath = message.filePath
-              panel.webview.postMessage({ command: "dataLoaded" })
-              break
-            case "showSummary":
-              runPythonScript("summary.py", loadedFilePath, (result) => {
-                panel.webview.postMessage({
-                  command: "summaryStats",
-                  data: result,
-                })
-              })
-            break
-            
-            
-            case 'generateChart':
-              const options = [message.chartType, message.xColumn, message.yColumn];
-              runPythonScript('generate_chart.py', loadedFilePath, (result) => {
-                  const imagePath = result;
-                  db.insertImage(imagePath, (err, imageId) => {
-                      if (err) {
-                          vscode.window.showErrorMessage('Error storing image in database');
-                          return;
-                      }
-                      db.getImageById(imageId, (err, image) => {
-                          if (err) {
-                              vscode.window.showErrorMessage('Error retrieving image from database');
-                              return;
-                          }
-                          const base64Image = Buffer.from(image).toString('base64');
-                          panel.webview.postMessage({
-                              command: 'chartData',
-                              data: base64Image,
-                          });
-                      });
+            case 'loadData':
+                    loadedFilePath = message.filePath;
+                    runPythonScript('get_columns.py', [loadedFilePath], (result) => {
+                      const columns = JSON.parse(result);
+                      panel.webview.postMessage({ command: 'dataLoaded', columns: columns });
                   });
-              }, options);
-            break;
-            
+                    break;
+                case 'showSummary':
+                    const column = message.column;
+                    runPythonScript('summary.py', loadedFilePath, (result) => {
+                        panel.webview.postMessage({
+                            command: 'summaryStats',
+                            data: result,
+                        });
+                    }, [column]);
+                    break;
+                // case 'showColumnStats':
+                //     const column = message.column;
+                //     runPythonScript('column_summary.py', column, (result) => {
+                //         panel.webview.postMessage({
+                //             command: 'columnStats',
+                //             data: result,
+                //         });
+                //     });
+                //     break;
+                case 'generateChart':
+                    const xColumn = message.xColumn;
+                    runPythonScript('generate_chart.py', loadedFilePath, (imagePath) => {
+                        db.run('INSERT INTO images (path) VALUES (?)', [imagePath], function(err) {
+                            if (err) {
+                                return console.error(err.message);
+                            }
+                            panel.webview.postMessage({
+                                command: 'chartData',
+                                data: imagePath
+                            });
+                        });
+                    }, [xColumn]);
+                    break;
           }
         },
         undefined,

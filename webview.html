@@ -1,36 +1,37 @@
 <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Data Cleaning Assistant</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <h1>Data Cleaning Assistant</h1>
-        <input type="file" id="fileInput" accept=".csv" />
-        <!-- <button onclick="loadData()">Load Data</button> -->
-        <button onclick="showSummary()">Show Summary Statistics</button>
-        <div id="controls" style="display: none;">
-            <h2>Generate Chart</h2>
-            <label for="chartType">Select Chart Type:</label>
-            <select id="chartType">
-                <option value="line">Line Chart</option>
-                <option value="scatter">Scatter Plot</option>
-                <option value = "box">Box Plot</option>
-                <option value="heatmap"> Heat Map </option>
-            </select>
-            <br>
-            <label for="xColumn">Select X-axis Column:</label>
-            <select id="xColumn"></select>
-            <br>
-            <label for="yColumn">Select Y-axis Column:</label>
-            <select id="yColumn"></select>
-            <br>
-            <button onclick="generateChart()">Generate Chart</button>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Cleaning Assistant</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <h1>Data Cleaning Assistant</h1>
+    <div id="fileUploadContainer">
+        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+        <button id="fileInputButton">Choose File</button>
+        <span id="fileName"></span>
+    </div>
+    <div id="fileUploadProgress" style="display: none;">
+        <progress id="progressBar" value="0" max="100"></progress>
+        <span id="progressText">0%</span>
+    </div>
+    <div id="mainContainer">
+        <div id="columnList" class="column">
+            <h2>Columns</h2>
+            <div id="columnButtons" class="column-buttons"></div>
         </div>
-        <div id="dataSummary"></div>
-        <div id="chartContainer">
+        <div>
+            <div id="dataSummary" class="column">
+                <h2>Summary Statistics</h2>
+                <!-- Summary statistics will be populated here -->
+            </div>
+            
+            <div id="chartContainer">
+                <!-- Chart will be displayed here -->
+            </div>
         </div>
-    </body>
+    </div>
     <script src="script.js"></script>
-    </html>
+</body>
+</html>
