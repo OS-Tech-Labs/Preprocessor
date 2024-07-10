@@ -80,27 +80,6 @@ function populateColumnButtons(columns) {
     });
 }
 
-// function displayColumnStats(data) {
-//     let summaryHtml = '<h2>Summary Statistics</h2>';
-//     summaryHtml += '<table><thead><tr>';
-//     summaryHtml += '<th>Attribute</th><th>Count</th><th>Mean</th><th>Std</th><th>Min</th><th>25%</th><th>50%</th><th>75%</th><th>Max</th>';
-//     summaryHtml += '</tr></thead><tbody>';
-//     for (const key in data) {
-//         summaryHtml += '<tr>';
-//         summaryHtml += '<td>' + key + '</td>';
-//         summaryHtml += '<td>' + data[key].count + '</td>';
-//         summaryHtml += '<td>' + data[key].mean + '</td>';
-//         summaryHtml += '<td>' + data[key].std + '</td>';
-//         summaryHtml += '<td>' + data[key].min + '</td>';
-//         summaryHtml += '<td>' + data[key]['25%'] + '</td>';
-//         summaryHtml += '<td>' + data[key]['50%'] + '</td>';
-//         summaryHtml += '<td>' + data[key]['75%'] + '</td>';
-//         summaryHtml += '<td>' + data[key].max + '</td>';
-//         summaryHtml += '</tr>';
-//     }
-//     summaryHtml += '</tbody></table>';
-//     document.getElementById('dataSummary').innerHTML = summaryHtml;
-// }
 
 function generateChartForColumn(columnName) {
     vscode.postMessage({
