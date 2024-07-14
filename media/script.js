@@ -66,6 +66,8 @@ console.log("Script loaded");
             let chartHtml = `<img src="data:image/png;base64,${base64Image}" alt="chart" />`;
             document.getElementById('chartContainer').innerHTML = chartHtml;
             break;
+        case 'clearChart':
+            document.getElementById('chartContainer').innerHTML = '';
 
             }
         });

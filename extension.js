@@ -8,7 +8,7 @@ const fs = require("fs")
 const db = require('./db');
 const os = require('os');
 
-
+let previousTableName = null;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -49,6 +49,35 @@ function activate(context) {
           switch (message.command) {
             case 'loadData':
                     loadedFilePath = message.filePath;
+                    const fileName = path.basename(loadedFilePath, '.csv').replace(/\s+/g, '_') + '_images';
+                    console.log(fileName);
+                    if (previousTableName) {
+                      db.dropTable(previousTableName, (err) => {
+                          if (err) {
+                              vscode.window.showErrorMessage('Error dropping previous table');
+                              return;
+                          }
+                          db.createTable(fileName, (err) => {
+                              if (err) {
+                                  vscode.window.showErrorMessage('Error creating table');
+                                  return;
+                              }
+                          });
+                              
+                      });
+                  } else {
+                      db.createTable(fileName, (err) => {
+                          if (err) {
+                              vscode.window.showErrorMessage('Error creating table');
+                              return;
+                          }
+                      })
+                     
+                  }
+                  clearChart(panel);
+
+                  previousTableName = fileName;
+              
                     runPythonScript('get_columns.py', [loadedFilePath], (result) => {
                       const columns = JSON.parse(result);
                       panel.webview.postMessage({ command: 'dataLoaded', columns: columns });
@@ -64,15 +93,7 @@ function activate(context) {
                         });
                     }, [column]);
                     break;
-                // case 'showColumnStats':
-                //     const column = message.column;
-                //     runPythonScript('column_summary.py', column, (result) => {
-                //         panel.webview.postMessage({
-                //             command: 'columnStats',
-                //             data: result,
-                //         });
-                //     });
-                //     break;
+                
                 case 'generateChart':
                   const columnName = message.xColumn
                   runPythonScript('generate_chart.py', loadedFilePath, (result) => {
@@ -158,6 +179,9 @@ function runPythonScript(scriptName, filePath, callback, options = []){
   pythonProcess.on("close", (code) => {
     console.log(`Python script exited with code ${code}`)
   })
+}
+function clearChart(panel) {
+  panel.webview.postMessage({ command: 'clearChart' });
 }
 module.exports = {
   activate,
