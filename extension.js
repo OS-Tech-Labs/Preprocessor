@@ -6,7 +6,6 @@ const fs = require("fs")
 // const { PythonShell } = require("python-shell")
 
 const db = require('./db');
-const os = require('os');
 
 let previousTableName = null;
 // This method is called when your extension is activated
