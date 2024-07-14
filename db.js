@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+const { serialize } = require('v8');
 const dbPath = path.join(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath);
 
@@ -41,11 +42,12 @@ function getImageById(id, callback) {
 
 // Delete all images
 function deleteImages(callback) {
-    db.run('DELETE FROM images', callback);
+    db.run('DROP TABLE IF EXISTS images;', callback);
 }
 
 module.exports = {
     insertImage,
     getImageById,
-    deleteImages
+    deleteImages,
+    
 };

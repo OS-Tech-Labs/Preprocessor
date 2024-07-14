@@ -8,7 +8,7 @@ const fs = require("fs")
 const db = require('./db');
 const os = require('os');
 
-const tempDir = path.join(os.tmpdir(), 'vscode-extension-temp');
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -20,13 +20,9 @@ function activate(context) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "my-extension" is now active!')
-
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with  registerCommand
   // The commandId parameter must match the command field in package.json
-  
-
-
   let startDisposable = vscode.commands.registerCommand(
     "dataCleaningAssistant.start",
     function () {
@@ -120,6 +116,14 @@ context.subscriptions.push(deactivateCommand);
 // This method is called when your extension is deactivated
 function deactivate() {
   console.log('Deactivated')
+  let tempDir = path.join(__dirname, 'python_scripts', 'temp');
+  try {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    console.log("Temporary directory deleted successfully.");
+} catch (err) {
+    console.error("Error deleting temporary directory:", err);
+}
+
   db.deleteImages((err) => {
     if (err) {
         console.error('Error deleting images:', err);
