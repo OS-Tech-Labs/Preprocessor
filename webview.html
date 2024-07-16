@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Cleaning Assistant</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <h1>Data Cleaning Assistant</h1>
+    <div id="fileUploadContainer">
+        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+        <button id="fileInputButton">Choose File</button>
+        <span id="fileName"></span>
+    </div>
+    <div id="fileUploadProgress" style="display: none;">
+        <progress id="progressBar" value="0" max="100"></progress>
+        <span id="progressText">0%</span>
+    </div>
+    <div class="mainContainer">
+        <div id="columnList"  >
+            <h2>Columns</h2>
+            <div id="columnButtons" class="column-buttons"></div>
+        </div>
+        <div id="Summary">
+            <div id="dataSummary" >
+                <h2>Summary Statistics</h2>
+                <!-- Summary statistics will be populated here -->
+            </div>
+            
+            <div id="chartContainer">
+                <!-- Chart will be displayed here -->
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

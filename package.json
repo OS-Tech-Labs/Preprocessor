@@ -12,24 +12,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand: My-Extension",
-    "onCommand: My-Extension.openwebview",
-    "onCommand: dataCleaningAssistant.start"
+    "onCommand: dataCleaningAssistant.start",
+    "onCommand: dataCleaningAssistant.deactivate"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "My-Extension",
-        "title": "My Extension"
-      },
-      {
-        "command": "My-Extension.openwebview",
-        "title": "Open Webview"
-      },
-      {
         "command": "dataCleaningAssistant.start",
-        "title": "Start Data Cleaning Assistant"
+        "title": "Start Data Cleaning Assistant dev"
+      },
+      {
+        "command": "dataCleaningAssistant.deactivate",
+        "title": "Deactivate Data Cleaning Assistant"
       }
     ]
   },
@@ -50,7 +45,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "python-shell": "^5.0.0",
-    "which": "^4.0.0"
+    "sqlite3": "^5.1.7"
   }
 }
